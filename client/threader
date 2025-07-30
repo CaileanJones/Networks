@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Function to generate random ASCII data
+generate_random_data() {
+    </dev/random tr -dc '[:print:]' | head -c 1024
+}
+
+# Loop 1000 times
+for ((i=1; i<=1000; i++))
+do
+    # Generate a unique filename in /tmp directory
+    filename="/tmp/file_$i.txt"
+
+    # Generate random ASCII data
+    generate_random_data > "$filename" &
+done
+
+# Wait for all background processes to finish
+wait
+
+# Run the Java client command concurrently for each file
+for ((i=1; i<=1000; i++))
+do
+    filename="/tmp/file_$i.txt"
+    java Client put "$filename" &
+done
+
+# Wait for all Java client commands to finish
+wait
